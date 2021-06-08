@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Timer</title>
+</head>
+<body style="font-family:Arial, Helvetica, sans-serif">
+  <h1 style="text-align: center;">Random Timer</h1>
+  <div style="
+    text-align: center;
+    padding-top: 10vh;
+  ">
+    <label style="
+      display: block;
+      padding: 15px;
+    ">Max Seconds</label>
+    <input type="number" value="0" id="max-seconds"/>
+    <div id="clock" style="
+      font-size: 3em;
+      color: teal;
+      padding: 5%;
+    "></div>
+    <div>
+      <button id="toggle-start">Start!</button>
+      <button id="reset">Reset</button>
+    </div>
+  </div>
+</body>
+<script>
+  let totalSeconds = 0;
+  let running = false;
+  let countdownInterval;
+  let finisherSound = new Audio('finish.mp3');
+  function countdown() {
+    if (totalSeconds <= 0) {
+      stopTimer();
+      finisherSound.play();
+      return
+    }
+    totalSeconds -= 1
+    updateClock();
+  }
+
+  function updateClock() {
+    let div = document.getElementById("clock");
+    let seconds = String(totalSeconds % 60).padStart(2, '0');
+    let minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+
+    div.innerHTML = `${minutes}:${seconds}`;
+  }
+  updateClock();
+
+  let startButton = document.getElementById("toggle-start");
+  startButton.addEventListener("click", toggleTimer);
+
+  function toggleTimer(e) {
+    running ? stopTimer() : startTimer();
+  }
+
+  function startTimer() {
+    countdown();
+    coundownInterval = setInterval(countdown, 1000);
+    running = true;
+    startButton.innerHTML = "Pause";
+  }
+
+  function stopTimer() {
+    startButton.innerHTML = "Start!";
+    clearInterval(coundownInterval);
+    running = false;
+  }
+
+  let maxSeconds = document.getElementById("max-seconds");
+  maxSeconds.addEventListener("input", setMaxSeconds);
+  let reset = document.getElementById("reset");
+  reset.addEventListener("click", setMaxSeconds);
+
+  function setMaxSeconds() {
+    if (!running) {
+      let input = +maxSeconds.value;
+      totalSeconds = Math.floor((Math.random() * input) + 1);
+      updateClock();
+    }
+  }
+</script>
+</html>
